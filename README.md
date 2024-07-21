@@ -42,7 +42,7 @@ You can backup 5 different database clusters with `PG*_[1..5]`, and assign an ar
 
 Create a `.envrc` file from `.envrc.example` and update with your AWS, PostgreSQL and Restic credentials.
 
-    $ wget https://raw.githubusercontent.com/ixc/restic-pg-dump/master/.envrc.example -O .envrc
+    $ wget https://raw.githubusercontent.com/agates/restic-pg-dump-k8s/master/.envrc.example -O .envrc
 
 Restrict access to `.envrc`, because it contains AWS and restic credentials:
 
