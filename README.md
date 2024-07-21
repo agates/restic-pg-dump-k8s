@@ -2,6 +2,8 @@
 
 Docker image that runs `pg_dump` individually for every database on a given server and saves incremental encrypted backups via [restic].
 
+Instead of relying on crontab inside the image, this is designed to deploy k8s CronJobs.
+
 By default:
 
 - Uses S3 as restic repository backend.
@@ -14,30 +16,17 @@ By default:
 
 # Usage
 
-Run:
+See the CronJob examples in the k8s directory.
 
-    $ docker run \
-    -d \
-    -e AWS_ACCESS_KEY_ID='...' \
-    -e AWS_SECRET_ACCESS_KEY='...' \
-    -e PGHOST='...' \
-    -e PGPASSWORD='...' \
-    -e PGUSER='...' \
-    -e RESTIC_PASSWORD='...' \
-    -e RESTIC_REPOSITORY='s3:s3.amazonaws.com/...' \
-    --name restic-pg-dump \
-    --restart always \
-    interaction/restic-pg-dump
+You can pass the following environment variables to override the defaults:
 
-You can also pass the following environment variables to override the defaults:
-
-    -e RESTIC_BACKUP_SCHEDULE='0 * * * *'  # Hourly
-    -e RESTIC_PRUNE_SCHEDULE='0 14 * * 0'  # Sunday midnight, AEST. Use '' to disable.
-    -e PGPORT='5432'
-    -e RESTIC_KEEP_HOURLY='24'
-    -e RESTIC_KEEP_DAILY='7'
-    -e RESTIC_KEEP_WEEKLY='4'
-    -e RESTIC_KEEP_MONTHLY='12'
+    RESTIC_BACKUP_SCHEDULE='0 * * * *'  # Hourly
+    RESTIC_PRUNE_SCHEDULE='0 14 * * 0'  # Sunday midnight, AEST. Use '' to disable.
+    PGPORT='5432'
+    RESTIC_KEEP_HOURLY='24'
+    RESTIC_KEEP_DAILY='7'
+    RESTIC_KEEP_WEEKLY='4'
+    RESTIC_KEEP_MONTHLY='12'
 
 You can backup 5 different database clusters with `PG*_[1..5]`, and assign an arbitrary hostname with `HOSTNAME_[1..5]` (if `PGHOST` is not a fully qualified domain name) environment variables.
 
@@ -46,8 +35,7 @@ You can backup 5 different database clusters with `PG*_[1..5]`, and assign an ar
     -e PGPASSWORD_2='...'
     -e PGPORT_2='5432'
     -e PGUSER_2='...'
-
-A `docker-compose.yml` file is provided for convenience.
+    -e RESTIC_TAGS_2='tag1,tag2'
 
 
 # Restore (macOS)
@@ -60,15 +48,15 @@ Restrict access to `.envrc`, because it contains AWS and restic credentials:
 
     $ chmod 600 .envrc
 
-Install [direnv] via [Homebrew] and configure to ensure your `.envrc` file is always sourced when you change to this directory:
+Install [direnv] via your package manager and configure to ensure your `.envrc` file is always sourced when you change to this directory:
 
-    $ brew install direnv
+    $ apt install direnv
     $ eval "$(direnv hook bash)"  # Change bash to zsh/fish/tcsh, if necessary, and add to your shell's RC file
     $ direnv allow
 
-Install [restic] via [Homebrew]:
+Install [restic] via your package manager:
 
-    $ brew install restic
+    $ apt install restic
 
 List snapshots:
 
@@ -77,6 +65,10 @@ List snapshots:
 Restore the latest snapshot for a given server:
 
     $ restic restore --host {HOSTNAME} --target "restore/{HOSTNAME}" latest
+
+Restore the latest snapshot for given tags set in `RESTIC_TAGS`:
+
+    $ restic restore --host {HOSTNAME} --tag nextcloud,postgresql --target "restore/{HOSTNAME}" latest
 
 Restore files matching a pattern from latest snapshot for a given server:
 
@@ -95,5 +87,4 @@ Then, access the latest snapshot from another terminal:
 
 
 [direnv]: https://direnv.net/
-[Homebrew]: https://brew.sh/
 [restic]: https://restic.net/
