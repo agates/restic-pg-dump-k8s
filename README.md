@@ -28,14 +28,14 @@ You can pass the following environment variables to override the defaults:
     RESTIC_KEEP_WEEKLY='4'
     RESTIC_KEEP_MONTHLY='12'
 
-You can backup 5 different database clusters with `PG*_[1..5]`, and assign an arbitrary hostname with `HOSTNAME_[1..5]` (if `PGHOST` is not a fully qualified domain name) environment variables.
+You can backup 5 different database clusters with `PG*_[1..5]`, and assign an arbitrary hostname with `HOSTNAME_[1..5]` (if `PGHOST` is not a fully qualified domain name) environment variables.  Note that `RESTIC_TAGS_[1..5]` can be customized per server.
 
-    -e HOSTNAME_2='...'
-    -e PGHOST_2='...'
-    -e PGPASSWORD_2='...'
-    -e PGPORT_2='5432'
-    -e PGUSER_2='...'
-    -e RESTIC_TAGS_2='tag1,tag2'
+    HOSTNAME_2='...'
+    PGHOST_2='...'
+    PGPASSWORD_2='...'
+    PGPORT_2='5432'
+    PGUSER_2='...'
+    RESTIC_TAGS_2='tag1,tag2'
 
 
 # Restore (macOS)
