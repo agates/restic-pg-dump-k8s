@@ -38,7 +38,7 @@ You can backup 5 different database clusters with `PG*_[1..5]`, and assign an ar
     RESTIC_TAGS_2='tag1,tag2'
 
 
-# Restore (macOS)
+# Restore
 
 Create a `.envrc` file from `.envrc.example` and update with your AWS, PostgreSQL and Restic credentials.
 
