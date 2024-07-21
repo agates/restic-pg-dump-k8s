@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup-cronjob
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: postgresql-backup-job-pod
+            image: docker.io/alecksgates/restic-pg-dump:latest
+            args: ["backup.sh"]
+            imagePullPolicy: Always
+            env:
+              - name: AWS_ACCESS_KEY_ID
+                value: ""
+              - name: AWS_SECRET_ACCESS_KEY
+                value: ""
+              - name: PGHOST
+                value: ""
+              - name: PGPASSWORD
+                value: ""
+              - name: PGUSER
+                value: ""
+              - name: RESTIC_PASSWORD
+                value: ""
+              - name: RESTIC_REPOSITORY
+                value: ""
+              - name: RESTIC_TAGS
+                value: postgresql,data
+          restartPolicy: OnFailure

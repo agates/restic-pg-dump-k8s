@@ -10,12 +10,25 @@ for i in {1..5}; do
 	export PGPASSWORD_VAR="PGPASSWORD_$i"
 	export PGPORT_VAR="PGPORT_$i"
 	export PGUSER_VAR="PGUSER_$i"
+	export RESTIC_TAGS_VAR="RESTIC_TAGS_$i"
 
 	export HOST="${!HOSTNAME_VAR:-${!PGHOST_VAR}}"
 	export PGHOST="${!PGHOST_VAR}"
 	export PGPASSWORD="${!PGPASSWORD_VAR}"
 	export PGPORT="${!PGPORT_VAR:-5432}"
 	export PGUSER="${!PGUSER_VAR:-postgres}"
+	export RESTIC_TAGS="${!RESTIC_TAGS_VAR}"
+
+	export RESTIC_TAGS_ARRAY=""
+	export RESTIC_TAGS_OPT=""
+
+	IFS=',' read -r -a RESTIC_TAGS_ARRAY <<< "$RESTIC_TAGS"
+
+	for rustic_tag in "${RESTIC_TAGS_ARRAY[@]}"
+	do
+		export RESTIC_TAGS_OPT="$RESTIC_TAGS_OPT --tag $rustic_tag"
+	done
+
 
 	# No more databases.
 	for var in PGHOST PGUSER; do
@@ -53,7 +66,7 @@ for i in {1..5}; do
 	# pg_dumpall --file="/pg_dump/!globals.sql" --globals-only
 
 	echo "Sending database dumps to S3"
-	while ! restic backup --host "$HOST" "/pg_dump"; do
+	while ! restic backup --host "$HOST" $RESTIC_TAGS_OPT "/pg_dump"; do
 		echo "Sleeping for 10 seconds before retry..."
 		sleep 10
 	done
@@ -62,3 +75,5 @@ for i in {1..5}; do
 
 	rm -rf "/pg_dump"
 done
+
+echo 'Finished backup successfully'
