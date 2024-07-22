@@ -20,8 +20,6 @@ See the CronJob examples in the k8s directory.
 
 You can pass the following environment variables to override the defaults:
 
-    RESTIC_BACKUP_SCHEDULE='0 * * * *'  # Hourly
-    RESTIC_PRUNE_SCHEDULE='0 14 * * 0'  # Sunday midnight, AEST. Use '' to disable.
     PGPORT='5432'
     RESTIC_KEEP_HOURLY='24'
     RESTIC_KEEP_DAILY='7'
